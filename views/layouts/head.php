@@ -19,6 +19,6 @@ use yii\web\View;
     <link rel="stylesheet" href="<?= Url::to('@web/assets/vendors/perfect-scrollbar/perfect-scrollbar.css') ?>">
     <link rel="stylesheet" href="<?= Url::to('@web/assets/vendors/bootstrap-icons/bootstrap-icons.css') ?>">
     <link rel="stylesheet" href="<?= Url::to('@web/assets/css/app.css') ?>">
-    <link rel="shortcut icon" href="<?= Url::to('@web/assets/images/favicon.png') ?>" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= Url::to('@web/images/jakpro.png') ?>" type="image/x-icon">
     <?php $this->head() ?>
 </head>

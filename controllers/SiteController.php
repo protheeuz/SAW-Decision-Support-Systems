@@ -40,12 +40,13 @@ class SiteController extends Controller
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
+        } else {
+            $model->password = ''; 
+            return $this->render('login', [
+                'model' => $model,
+                'error' => $model->getFirstError('password'), // Get error message for password field
+            ]);
         }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
     }
 
     public function actionLogout()

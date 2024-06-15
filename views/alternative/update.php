@@ -5,26 +5,44 @@ use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Alternative */
-/* @var $form yii\widgets\ActiveForm */
 
-$this->title = 'Update Alternative: ' . $model->name;
+$this->title = 'Edit Alternative: ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Alternatives', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id_alternative]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Edit';
 ?>
 
-<div class="alternative-update">
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="page-heading">
+    <h3>Alternatif Edit</h3>
+</div>
+<div class="page-content">
+    <section class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Data</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <?php $form = ActiveForm::begin([
+                                'action' => ['update', 'id' => $model->id_alternative],
+                                'method' => 'post',
+                            ]); ?>
 
-    <div class="alternative-form">
-        <?php $form = ActiveForm::begin(); ?>
+                            <div class="form-group">
+                                <?= $form->field($model, 'id_alternative')->hiddenInput()->label(false) ?>
+                                <?= $form->field($model, 'name')->textInput(['value' => $model->name]) ?>
+                            </div>
+                            <div class="form-group">
+                                <?= Html::submitButton('Edit Data', ['class' => 'btn btn-info btn-sm']) ?>
+                            </div>
 
-        <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                            <?php ActiveForm::end(); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <?php ActiveForm::end(); ?>
-    </div>
+    </section>
 </div>

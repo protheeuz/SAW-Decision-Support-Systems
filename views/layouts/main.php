@@ -12,6 +12,7 @@ AppAsset::register($this);
 <body>
 <?php $this->beginBody() ?>
 
+<?php if (Yii::$app->controller->action->id !== 'login'): ?>
 <div id="app">
     <?= $this->render('sidebar') ?>
     <div id="main">
@@ -29,6 +30,9 @@ AppAsset::register($this);
         <?= $this->render('footer') ?>
     </div>
 </div>
+<?php else: ?>
+    <?= $content ?>
+<?php endif; ?>
 
 <?= $this->render('js') ?>
 <?php $this->endBody() ?>

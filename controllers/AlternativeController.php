@@ -4,15 +4,16 @@ namespace app\controllers;
 
 use Yii;
 use yii\web\Controller;
-use app\models\Alternative;
 use yii\web\NotFoundHttpException;
+use app\models\Alternative;
 
 class AlternativeController extends Controller
 {
     public function actionIndex()
     {
         $alternatives = Alternative::find()->all();
-        return $this->render('index', ['alternatives' => $alternatives]);
+        $model = new Alternative();
+        return $this->render('index', ['alternatives' => $alternatives, 'model' => $model]);
     }
 
     public function actionCreate()
@@ -40,6 +41,7 @@ class AlternativeController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+
         return $this->redirect(['index']);
     }
 
@@ -50,5 +52,21 @@ class AlternativeController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::class,
+                'rules' => [
+                    [
+                        'actions' => ['index', 'create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
     }
 }
