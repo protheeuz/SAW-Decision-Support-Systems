@@ -5,7 +5,7 @@
         </div>
         <div class="float-end">
             <p>Crafted with <span class="text-danger"><i class="bi bi-heart"></i></span> by <a
-                    href="http://github.com/protheeuz/">Mathtech Digital Studio</a></p>
+                    href="http://github.com/protheeuz/">Ruth Yuni Arta Gultom</a></p>
         </div>
     </div>
 </footer>

@@ -7,7 +7,8 @@ use yii\helpers\Url;
         <div class="sidebar-header">
             <div class="d-flex justify-content-between">
                 <div class="logo">
-                    <a href="<?= Url::to(['/site/index']) ?>">SPK - SAW</a>
+                    <img src="<?= Url::to('@web/images/jakpro.png') ?>" alt="Jakpro Logo" style="height: 100px; margin-bottom: 10px;">
+                    <!-- <a href="<?= Url::to(['/site/index']) ?>">SAW</a> -->
                 </div>
                 <div class="toggler">
                     <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>

@@ -6,8 +6,8 @@ use yii\web\AssetBundle;
 
 class AppAsset extends AssetBundle
 {
-    public $basePath = '@webroot/assets';
-    public $baseUrl = '@web/assets';
+    public $basePath = '@webroot';
+    public $baseUrl = '@web';
     public $css = [
         'css/bootstrap.css',
         'vendors/iconly/bold.css',
@@ -24,5 +24,6 @@ class AppAsset extends AssetBundle
     ];
     public $depends = [
         'yii\web\YiiAsset',
+        'yii\bootstrap4\BootstrapAsset',
     ];
 }

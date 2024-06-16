@@ -4,11 +4,11 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 
-class Evaluation extends ActiveRecord
+class Preference extends ActiveRecord
 {
     public static function tableName()
     {
-        return 'saw_evaluations';
+        return 'preference'; // Sesuaikan dengan nama tabel di database
     }
 
     public function rules()

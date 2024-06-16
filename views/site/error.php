@@ -13,7 +13,7 @@ $this->title = 'Error';
         <?= nl2br(Html::encode($exception->getMessage())) ?>
     </div>
     <p>
-        The above error occurred while the Web server was processing your request.
-        Please contact us if you think this is a server error. Thank you.
+        Wah, kayaknya ada gangguan masalah pada Web Server nih...
+        Mohon tunggu sebentar ya. Terima kasih :::.
     </p>
 </div>

@@ -8,14 +8,14 @@ class Criteria extends ActiveRecord
 {
     public static function tableName()
     {
-        return 'saw_criterias'; // Nama tabel di database
+        return 'saw_criterias';
     }
 
     public function rules()
     {
         return [
             [['criteria', 'weight', 'attribute'], 'required'],
-            [['weight'], 'number'],
+            [['weight'], 'integer', 'min' => 1, 'max' => 20],
             [['criteria', 'attribute'], 'string', 'max' => 255],
         ];
     }

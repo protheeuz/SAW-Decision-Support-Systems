@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $alternatives app\models\Alternative[] */
 /* @var $model app\models\Alternative */
 
-$this->title = 'Alternatives';
+$this->title = 'Alternatif';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </caption>
                             <tr>
                                 <th>No</th>
-                                <th colspan="2">Name</th>
+                                <th colspan="2">Nama</th>
                             </tr>
                             <?php foreach ($alternatives as $index => $alternative): ?>
                             <tr>
