@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $alternatives app\models\Alternative[] */
 /* @var $model app\models\Alternative */
 
-$this->title = 'Alternatif';
+$this->title = 'Alternatif - Nama Karyawan';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card">
 
                 <div class="card-header">
-                    <h4 class="card-title">Tabel Alternatif</h4>
+                    <h4 class="card-title">Tabel Karyawan - Alternatif</h4>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </p>
                     </div>
                     <button type="button" class="btn btn-outline-success btn-sm m-2" data-toggle="modal" data-target="#inlineForm">
-                        Tambah Alternatif
+                        Tambah Karyawan
                     </button>
                     <hr>
                     <div class="table-responsive">

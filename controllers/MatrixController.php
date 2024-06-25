@@ -41,30 +41,33 @@ class MatrixController extends Controller
     public function actionSave()
     {
         $model = new Evaluation();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            Yii::$app->session->setFlash('success', 'Data evaluasi berhasil disimpan.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Gagal menyimpan data evaluasi.');
         }
 
-        return $this->render('index', [
-            'model' => $model,
-        ]);
+        return $this->redirect(['index']);
     }
-
+    
     public function actionDelete($id_alternative, $id_criteria)
     {
-        Yii::info('Deleting evaluation with id_alternative: ' . $id_alternative . ' and id_criteria: ' . $id_criteria, __METHOD__);
+        Yii::info('Menghapus evaluasi dengan id_alternative: ' . $id_alternative . ' dan id_criteria: ' . $id_criteria, __METHOD__);
     
         $model = Evaluation::findOne(['id_alternative' => $id_alternative, 'id_criteria' => $id_criteria]);
     
         if ($model !== null) {
-            Yii::info('Model found. Proceeding to delete.', __METHOD__);
+            Yii::info('Model ditemukan. Melanjutkan untuk menghapus.', __METHOD__);
             $model->delete();
-            Yii::info('Model deleted successfully.', __METHOD__);
+            Yii::info('Model berhasil dihapus.', __METHOD__);
         } else {
-            Yii::warning('Model not found for deletion.', __METHOD__);
-            throw new NotFoundHttpException('The requested page does not exist.');
+            Yii::warning('Model tidak ditemukan untuk dihapus.', __METHOD__);
+            throw new NotFoundHttpException('Halaman yang diminta tidak ditemukan.');
         }
     
-        return $this->redirect(['index']);
+        return $this->render('index', [
+            'model' => $model,
+        ]);
     }
 }
