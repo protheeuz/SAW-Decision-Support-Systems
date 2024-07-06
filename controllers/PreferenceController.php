@@ -25,42 +25,48 @@ class PreferenceController extends Controller
 
         // Calculate normalized values
         $R = [];
+        $maxValues = [];
+        $minValues = [];
+
+        foreach ($criterias as $criteria) {
+            $values = array_column(array_filter($evaluations, function ($v) use ($criteria) {
+                return isset($v['id_criteria']) && $v['id_criteria'] == $criteria->id_criteria;
+            }), 'value');
+
+            $maxValues[$criteria->id_criteria] = !empty($values) ? max($values) : 1;
+            $minValues[$criteria->id_criteria] = !empty($values) ? min($values) : 1;
+        }
+
         foreach ($alternatives as $alternative) {
             foreach ($criterias as $criteria) {
-                $value = $X[$alternative->id_alternative][$criteria->id_criteria] ?? null;
-                if ($value !== null) {
-                    if ($criteria->attribute == 'benefit') {
-                        $maxValue = max(array_column(array_filter($X, function ($v) use ($criteria) {
-                            return isset($v[$criteria->id_criteria]);
-                        }), $criteria->id_criteria));
-                        $R[$alternative->id_alternative][$criteria->id_criteria] = $value / ($maxValue ?: 1);
-                    } else {
-                        $minValue = min(array_column(array_filter($X, function ($v) use ($criteria) {
-                            return isset($v[$criteria->id_criteria]);
-                        }), $criteria->id_criteria));
-                        $R[$alternative->id_alternative][$criteria->id_criteria] = ($minValue ?: 1) / ($value ?: 1);
-                    }
+                $value = $X[$alternative->id_alternative][$criteria->id_criteria] ?? 0;
+                if ($criteria->attribute == 'benefit') {
+                    $R[$alternative->id_alternative][$criteria->id_criteria] = $value / ($maxValues[$criteria->id_criteria] ?: 1);
+                } else {
+                    $R[$alternative->id_alternative][$criteria->id_criteria] = ($minValues[$criteria->id_criteria] ?: 1) / ($value ?: 1);
                 }
+            }
+        }
+
+        // Calculate total weight dynamically from sub-criteria weighted by Project Director
+        $totalWeight = 0;
+        foreach ($criterias as $criteria) {
+            $subCriterias = SubCriteria::find()->where(['id_criteria' => $criteria->id_criteria])->all();
+            foreach ($subCriterias as $subCriteria) {
+                $totalWeight += $criteria->weight * $subCriteria->weight_pd;
             }
         }
 
         // Calculate preference values
         $P = [];
         foreach ($alternatives as $alternative) {
-            $hasCompleteEvaluations = true;
+            $P[$alternative->id_alternative] = 0;
             foreach ($criterias as $criteria) {
-                if (!isset($R[$alternative->id_alternative][$criteria->id_criteria])) {
-                    $hasCompleteEvaluations = false;
-                    break;
-                }
-            }
-            if ($hasCompleteEvaluations) {
-                $P[$alternative->id_alternative] = 0;
-                foreach ($criterias as $criteria) {
+                if (isset($R[$alternative->id_alternative][$criteria->id_criteria])) {
                     $subCriterias = SubCriteria::find()->where(['id_criteria' => $criteria->id_criteria])->all();
                     foreach ($subCriterias as $subCriteria) {
-                        $totalWeight = $subCriteria->weight_hr * ($subCriteria->weight_pmo ?: 1) * ($subCriteria->weight_pd ?: 1);
-                        $P[$alternative->id_alternative] += $totalWeight * $R[$alternative->id_alternative][$criteria->id_criteria];
+                        $weightedSubCriteria = $criteria->weight * $subCriteria->weight_pd;
+                        $P[$alternative->id_alternative] += $weightedSubCriteria * $R[$alternative->id_alternative][$criteria->id_criteria];
                     }
                 }
             }

@@ -118,5 +118,21 @@ $dataProvider = new ArrayDataProvider([
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Keterangan Nilai</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <ul>
+                            <li><strong>350 - 425:</strong> Sangat Baik</li>
+                            <li><strong>275 - 350:</strong> Baik</li>
+                            <li><strong>200 - 275:</strong> Kurang Baik</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>

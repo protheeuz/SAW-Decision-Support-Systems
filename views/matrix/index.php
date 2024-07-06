@@ -13,6 +13,16 @@ use yii\widgets\ActiveForm;
 
 $this->title = 'Metrik';
 $this->params['breadcrumbs'][] = $this->title;
+
+if (Yii::$app->session->hasFlash('warning')) {
+    echo '<div class="alert alert-warning">' . Yii::$app->session->getFlash('warning') . '</div>';
+}
+if (Yii::$app->session->hasFlash('success')) {
+    echo '<div class="alert alert-success">' . Yii::$app->session->getFlash('success') . '</div>';
+}
+if (Yii::$app->session->hasFlash('error')) {
+    echo '<div class="alert alert-danger">' . Yii::$app->session->getFlash('error') . '</div>';
+}
 ?>
 <div class="page-heading">
     <h3><?= Html::encode($this->title) ?></h3>
@@ -146,7 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $form = ActiveForm::begin(['action' => Url::to(['matrix/save'])]); ?>
+            <?php $form = ActiveForm::begin(['action' => Url::to(['matrix/index'])]); ?>
             <div class="modal-body">
                 <?= $form->field(new \app\models\Evaluation(), 'id_alternative')->dropDownList(
                     \yii\helpers\ArrayHelper::map($alternatives, 'id_alternative', 'name'),

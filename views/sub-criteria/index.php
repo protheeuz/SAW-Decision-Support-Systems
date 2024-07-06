@@ -11,7 +11,7 @@ use yii\bootstrap4\Modal;
 /* @var $criterias app\models\Criteria[] */
 /* @var $groupedSubCriterias array */
 
-$this->title = 'Sub Criteria';
+$this->title = 'Sub Kriteria';
 $this->params['breadcrumbs'][] = $this->title;
 
 BootstrapAsset::register($this);
@@ -27,7 +27,7 @@ if (Yii::$app->session->hasFlash('error')) {
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Sub Criteria', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Tambah Sub Kriteria', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <table class="table table-striped table-bordered">
@@ -45,14 +45,25 @@ if (Yii::$app->session->hasFlash('error')) {
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($criterias as $criteria) : ?>
+            <?php 
+            $totalWeightCriteria = 0;
+            $totalWeightCalculated = 0;
+
+            foreach ($criterias as $criteria) :
+                // Hitung total bobot kriteria dengan memperhitungkan sub-kriteria
+                $numSubCriterias = count($groupedSubCriterias[$criteria->id_criteria] ?? []);
+                $totalWeightCriteria += $criteria->weight * $numSubCriterias;
+                ?>
                 <tr>
                     <td colspan="9" style="background-color: #f0f0f0; font-weight: bold;">
                         <?= Html::encode($criteria->criteria) ?>
                     </td>
                 </tr>
                 <?php if (isset($groupedSubCriterias[$criteria->id_criteria])) : ?>
-                    <?php foreach ($groupedSubCriterias[$criteria->id_criteria] as $subCriteria) : ?>
+                    <?php foreach ($groupedSubCriterias[$criteria->id_criteria] as $subCriteria) :
+                        $calculatedWeight = !is_null($subCriteria->weight_pd) ? $criteria->weight * $subCriteria->weight_pd : 0;
+                        $totalWeightCalculated += $calculatedWeight;
+                    ?>
                         <tr>
                             <td></td>
                             <td><?= Html::encode($subCriteria->name) ?></td>
@@ -62,11 +73,7 @@ if (Yii::$app->session->hasFlash('error')) {
                             <td><?= Html::encode($subCriteria->weight_pmo) ?></td>
                             <td><?= Html::encode($subCriteria->weight_pd) ?></td>
                             <td>
-                                <?php if (!is_null($subCriteria->weight_pd)) : ?>
-                                    <?= Html::encode($criteria->weight * $subCriteria->weight_pd) ?>
-                                <?php else : ?>
-                                    N/A
-                                <?php endif; ?>
+                                <?= Html::encode($calculatedWeight) ?>
                             </td>
                             <td>
                                 <?= Html::a('<i class="bi bi-eye"></i>', ['view', 'id' => $subCriteria->id], ['title' => 'View']) ?>
@@ -74,14 +81,13 @@ if (Yii::$app->session->hasFlash('error')) {
                                 <?= Html::a('<i class="bi bi-trash"></i>', ['delete', 'id' => $subCriteria->id], [
                                     'title' => 'Delete',
                                     'data' => [
-                                        'confirm' => 'Are you sure you want to delete this item?',
+                                        'confirm' => 'Apa kamu yakin untuk menghapus item ini?',
                                         'method' => 'post',
                                         'params' => [
                                             Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
                                         ],
                                     ],
                                 ]) ?>
-
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -93,6 +99,18 @@ if (Yii::$app->session->hasFlash('error')) {
                 <?php endif; ?>
             <?php endforeach; ?>
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" style="font-weight: bold;">Total</td>
+                <td><?= Html::encode($totalWeightCriteria) ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><?= Html::encode($totalWeightCalculated) ?></td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
 
 </div>

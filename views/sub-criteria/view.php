@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => 'Apa kamu yakin untuk menghapus item ini?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -30,11 +30,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'id_criteria',
+            [
+                'attribute' => 'criteria.criteria',
+                'label' => 'Kriteria',
+            ],
             'name',
             'weight_hr',
-            'target_pmo',
             'weight_pmo',
             'weight_pd',
+            [
+                'attribute' => 'total_weight',
+                'label' => 'Total Bobot',
+                'value' => function ($model) {
+                    return $model->weight_hr + $model->weight_pmo + $model->weight_pd;
+                }
+            ],
         ],
     ]) ?>
 
