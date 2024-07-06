@@ -19,7 +19,9 @@ BootstrapAsset::register($this);
 if (Yii::$app->session->hasFlash('error')) {
     $this->registerJs('$("#errorModal").modal("show");');
 }
+
 ?>
+
 <div class="sub-criteria-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -43,14 +45,14 @@ if (Yii::$app->session->hasFlash('error')) {
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($criterias as $criteria): ?>
+            <?php foreach ($criterias as $criteria) : ?>
                 <tr>
                     <td colspan="9" style="background-color: #f0f0f0; font-weight: bold;">
                         <?= Html::encode($criteria->criteria) ?>
                     </td>
                 </tr>
-                <?php if (isset($groupedSubCriterias[$criteria->id_criteria])): ?>
-                    <?php foreach ($groupedSubCriterias[$criteria->id_criteria] as $subCriteria): ?>
+                <?php if (isset($groupedSubCriterias[$criteria->id_criteria])) : ?>
+                    <?php foreach ($groupedSubCriterias[$criteria->id_criteria] as $subCriteria) : ?>
                         <tr>
                             <td></td>
                             <td><?= Html::encode($subCriteria->name) ?></td>
@@ -60,9 +62,9 @@ if (Yii::$app->session->hasFlash('error')) {
                             <td><?= Html::encode($subCriteria->weight_pmo) ?></td>
                             <td><?= Html::encode($subCriteria->weight_pd) ?></td>
                             <td>
-                                <?php if (!is_null($subCriteria->weight_pd)): ?>
+                                <?php if (!is_null($subCriteria->weight_pd)) : ?>
                                     <?= Html::encode($criteria->weight * $subCriteria->weight_pd) ?>
-                                <?php else: ?>
+                                <?php else : ?>
                                     N/A
                                 <?php endif; ?>
                             </td>
@@ -74,12 +76,16 @@ if (Yii::$app->session->hasFlash('error')) {
                                     'data' => [
                                         'confirm' => 'Are you sure you want to delete this item?',
                                         'method' => 'post',
+                                        'params' => [
+                                            Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+                                        ],
                                     ],
                                 ]) ?>
+
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                <?php else: ?>
+                <?php else : ?>
                     <tr>
                         <td></td>
                         <td colspan="8">No sub-criteria found for this criteria.</td>

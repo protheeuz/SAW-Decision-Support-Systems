@@ -14,6 +14,10 @@ $config = [
     'components' => [
         'request' => [
             'cookieValidationKey' => 'Duotk-8qdyIXWG4o4RLb1QNWu3JIsyC6',
+            'csrfParam' => '_csrf-backend',
+            'csrfCookie' => [
+                'httpOnly' => true,
+            ],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -64,6 +68,19 @@ $config = [
                 'sub-criteria/create' => 'sub-criteria/create',
                 'sub-criteria/update/<id:\d+>' => 'sub-criteria/update',
                 'sub-criteria/delete/<id:\d+>' => 'sub-criteria/delete',
+            ],
+        ],
+        'as access' => [
+            'class' => 'yii\filters\AccessControl',
+            'rules' => [
+                [
+                    'allow' => true,
+                    'actions' => ['delete'],
+                    'roles' => ['@'],
+                    'matchCallback' => function ($rule, $action) {
+                        return Yii::$app->user->identity->role == 'HR Manager';
+                    }
+                ],
             ],
         ],
     ],
