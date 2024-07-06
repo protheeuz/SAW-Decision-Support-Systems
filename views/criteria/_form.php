@@ -14,15 +14,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'criteria')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'weight')->dropDownList(
-        range(1, 20),
-        ['prompt' => 'Pilih Bobot']
-    ) ?>
+    <?= $form->field($model, 'weight')->textInput() ?>
 
-    <?= $form->field($model, 'attribute')->dropDownList(
-        ['benefit' => 'Benefit', 'cost' => 'Cost'],
-        ['prompt' => 'Pilih Atribut']
-    ) ?>
+    <?= $form->field($model, 'target')->textInput() ?>
+
+    <?= $form->field($model, 'attribute')->dropDownList(['benefit' => 'Benefit', 'cost' => 'Cost']) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

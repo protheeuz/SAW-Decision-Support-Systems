@@ -31,6 +31,9 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+        $user = Yii::$app->user->identity;
+        $role = $user->role;
+
         $alternatives = Alternative::find()->indexBy('id_alternative')->all();
         $criterias = Criteria::find()->all();
 
@@ -84,6 +87,7 @@ class SiteController extends Controller
             'alternatives' => $alternatives,
             'criterias' => $criterias,
             'preferences' => $P,
+            'role' => $role, // Pass role to view
         ]);
     }
 

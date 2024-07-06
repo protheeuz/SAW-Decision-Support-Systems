@@ -14,9 +14,14 @@ class Criteria extends ActiveRecord
     public function rules()
     {
         return [
-            [['criteria', 'weight', 'attribute'], 'required'],
-            [['weight'], 'integer', 'min' => 1, 'max' => 20],
+            [['criteria', 'weight', 'attribute', 'target'], 'required'],
+            [['weight', 'target'], 'integer', 'min' => 1],
             [['criteria', 'attribute'], 'string', 'max' => 255],
         ];
+    }
+
+    public function getSubCriterias()
+    {
+        return $this->hasMany(SubCriteria::class, ['id_criteria' => 'id_criteria']);
     }
 }

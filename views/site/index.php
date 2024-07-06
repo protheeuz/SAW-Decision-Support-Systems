@@ -7,6 +7,7 @@ use app\models\Criteria;
 /* @var $totalAlternatives int */
 /* @var $totalCriterias int */
 /* @var $totalPreferences int */
+/* @var $role string */
 
 $this->title = 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
@@ -20,6 +21,11 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
 </div>
 <div class="page-content">
     <section class="row">
+        <div class="col-12">
+            <div class="alert alert-success">
+                Halo, Selamat datang <?= Html::encode($role) ?>
+            </div>
+        </div>
         <div class="col-12 col-lg-3 col-md-6">
             <div class="card">
                 <div class="card-header">

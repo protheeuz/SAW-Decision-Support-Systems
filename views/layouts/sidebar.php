@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use yii\helpers\Url;
 ?>
@@ -38,9 +39,11 @@ use yii\helpers\Url;
                         <li class="submenu-item">
                             <a href="<?= Url::to(['/criteria/index']) ?>">Bobot &amp; Kriteria</a>
                         </li>
+                        <li class="submenu-item">
+                            <a href="<?= Url::to(['/sub-criteria/index']) ?>">Sub-Kriteria</a>
+                        </li>
                     </ul>
                 </li>
-
                 <li class="sidebar-item">
                     <a href="<?= Url::to(['/matrix/index']) ?>" class='sidebar-link'>
                         <i class="bi bi-pentagon-fill"></i>

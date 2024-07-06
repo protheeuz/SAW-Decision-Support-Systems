@@ -7,6 +7,7 @@ use yii\web\Controller;
 use app\models\Alternative;
 use app\models\Criteria;
 use app\models\Evaluation;
+use app\models\SubCriteria;
 
 class PreferenceController extends Controller
 {
@@ -29,10 +30,14 @@ class PreferenceController extends Controller
                 $value = $X[$alternative->id_alternative][$criteria->id_criteria] ?? null;
                 if ($value !== null) {
                     if ($criteria->attribute == 'benefit') {
-                        $maxValue = max(array_column(array_filter($X, function($v) use ($criteria) { return isset($v[$criteria->id_criteria]); }), $criteria->id_criteria));
+                        $maxValue = max(array_column(array_filter($X, function ($v) use ($criteria) {
+                            return isset($v[$criteria->id_criteria]);
+                        }), $criteria->id_criteria));
                         $R[$alternative->id_alternative][$criteria->id_criteria] = $value / ($maxValue ?: 1);
                     } else {
-                        $minValue = min(array_column(array_filter($X, function($v) use ($criteria) { return isset($v[$criteria->id_criteria]); }), $criteria->id_criteria));
+                        $minValue = min(array_column(array_filter($X, function ($v) use ($criteria) {
+                            return isset($v[$criteria->id_criteria]);
+                        }), $criteria->id_criteria));
                         $R[$alternative->id_alternative][$criteria->id_criteria] = ($minValue ?: 1) / ($value ?: 1);
                     }
                 }
@@ -41,7 +46,6 @@ class PreferenceController extends Controller
 
         // Calculate preference values
         $P = [];
-        $W = array_column($criterias, 'weight', 'id_criteria');
         foreach ($alternatives as $alternative) {
             $hasCompleteEvaluations = true;
             foreach ($criterias as $criteria) {
@@ -53,7 +57,11 @@ class PreferenceController extends Controller
             if ($hasCompleteEvaluations) {
                 $P[$alternative->id_alternative] = 0;
                 foreach ($criterias as $criteria) {
-                    $P[$alternative->id_alternative] += $W[$criteria->id_criteria] * $R[$alternative->id_alternative][$criteria->id_criteria];
+                    $subCriterias = SubCriteria::find()->where(['id_criteria' => $criteria->id_criteria])->all();
+                    foreach ($subCriterias as $subCriteria) {
+                        $totalWeight = $subCriteria->weight_hr * ($subCriteria->weight_pmo ?: 1) * ($subCriteria->weight_pd ?: 1);
+                        $P[$alternative->id_alternative] += $totalWeight * $R[$alternative->id_alternative][$criteria->id_criteria];
+                    }
                 }
             }
         }
@@ -62,7 +70,6 @@ class PreferenceController extends Controller
             'alternatives' => $alternatives,
             'P' => $P,
             'R' => $R,
-            'W' => $W,
         ]);
     }
 }
