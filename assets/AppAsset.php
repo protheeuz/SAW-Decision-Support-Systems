@@ -21,6 +21,7 @@ class AppAsset extends AssetBundle
         'vendors/apexcharts/apexcharts.js',
         'js/pages/dashboard.js',
         'js/main.js',
+        'https://cdn.jsdelivr.net/npm/chart.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

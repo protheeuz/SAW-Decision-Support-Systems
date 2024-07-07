@@ -38,6 +38,36 @@ $authTextClass = 'text-white';
             align-items: center;
             flex-direction: column;
             text-align: center;
+            height: 100vh;
+        }
+        .auth-right .bg-primary {
+            background-color: #007bff !important;
+        }
+        #auth-left {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            text-align: center;
+        }
+        #auth-left .form-group {
+            width: 100%;
+        }
+        .input-group {
+            font-size: 1.2rem; /* Adjust the font size */
+        }
+        .input-group-text {
+            padding: 15px 20px; /* Adjust padding */
+        }
+        .form-control {
+            padding: 15px 20px; /* Adjust padding */
+            height: auto; /* Ensure the height is auto */
+            font-size: 1.2rem; /* Adjust the font size */
+        }
+        .btn-lg {
+            padding: 20px 30px; /* Adjust padding */
+            font-size: 1.4rem; /* Adjust the font size */
         }
     </style>
 </head>
@@ -45,32 +75,32 @@ $authTextClass = 'text-white';
 <body>
     <div id="auth">
         <div class="row h-100">
-            <div class="col-lg-5 col-12">
+            <div class="col-lg-6 col-12">
                 <div id="auth-left">
                     <h1 class="<?= $authTitleClass ?>"><?= Html::encode($this->title) ?></h1>
                     <?php $form = ActiveForm::begin([
                         'id' => 'login-form',
                         'layout' => 'horizontal',
                         'fieldConfig' => [
-                            'template' => "{label}\n<div class=\"col-lg-9\">{input}{error}</div>",
+                            'template' => "{label}\n<div class=\"col-lg-12\">{input}{error}</div>",
                             'labelOptions' => ['class' => 'col-lg-3 control-label'],
                         ],
                     ]); ?>
 
                     <?= $form->field($model, 'username', [
                         'inputTemplate' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="bi bi-person"></i></span></div>{input}</div>',
-                    ])->textInput(['autofocus' => true, 'placeholder' => 'Username'])->label(false) ?>
+                    ])->textInput(['autofocus' => true, 'placeholder' => 'Username', 'class' => 'form-control'])->label(false) ?>
 
                     <?= $form->field($model, 'password', [
                         'inputTemplate' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="bi bi-shield-lock"></i></span></div>{input}</div>',
-                    ])->passwordInput(['placeholder' => 'Password'])->label(false) ?>
+                    ])->passwordInput(['placeholder' => 'Password', 'class' => 'form-control'])->label(false) ?>
 
                     <?= $form->field($model, 'rememberMe')->checkbox([
-                        'template' => "<div class=\"col-lg-offset-3 col-lg-9\">{input} Simpan info login {label}</div>\n<div class=\"col-lg-9 offset-lg-3\">{error}</div>",
+                        'template' => "<div class=\"col-lg-12\">{input} Simpan info login {label}</div>\n<div class=\"col-lg-12\">{error}</div>",
                     ])->label(false) ?>
 
                     <div class="form-group">
-                        <div class="col-lg-offset-3 col-lg-9">
+                        <div class="col-lg-12">
                             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block btn-lg shadow-lg mt-5', 'name' => 'login-button']) ?>
                         </div>
                     </div>
@@ -85,7 +115,7 @@ $authTextClass = 'text-white';
 
                 </div>
             </div>
-            <div class="col-lg-7 d-none d-lg-block">
+            <div class="col-lg-6 d-none d-lg-block">
                 <div id="auth-right" class="bg-primary text-center py-5 auth-right">
                     <?= Html::img($logoPath, ['class' => 'img-fluid mb-4', 'style' => 'max-width: 250px;', 'alt' => 'Logo']) ?>
                     <p class="<?= $authTextClass ?>">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>

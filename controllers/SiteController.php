@@ -31,63 +31,37 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        $user = Yii::$app->user->identity;
-        $role = $user->role;
-
-        $alternatives = Alternative::find()->indexBy('id_alternative')->all();
-        $criterias = Criteria::find()->all();
-
-        // Get the evaluations
-        $evaluations = Evaluation::find()->all();
-        $X = [];
-        foreach ($evaluations as $evaluation) {
-            $X[$evaluation->id_alternative][$evaluation->id_criteria] = $evaluation->value;
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['site/login']);
         }
 
-        // Calculate normalized values
-        $R = [];
-        foreach ($alternatives as $alternative) {
-            foreach ($criterias as $criteria) {
-                $value = $X[$alternative->id_alternative][$criteria->id_criteria] ?? null;
-                if ($value !== null) {
-                    if ($criteria->attribute == 'benefit') {
-                        $maxValue = max(array_column(array_filter($X, function($v) use ($criteria) { return isset($v[$criteria->id_criteria]); }), $criteria->id_criteria));
-                        $R[$alternative->id_alternative][$criteria->id_criteria] = $value / ($maxValue ?: 1);
-                    } else {
-                        $minValue = min(array_column(array_filter($X, function($v) use ($criteria) { return isset($v[$criteria->id_criteria]); }), $criteria->id_criteria));
-                        $R[$alternative->id_alternative][$criteria->id_criteria] = ($minValue ?: 1) / ($value ?: 1);
-                    }
-                }
-            }
-        }
+        $totalAlternatives = (new \yii\db\Query())
+            ->from('saw_alternatives')
+            ->count();
 
-        // Calculate preference values
-        $P = [];
-        $W = array_column($criterias, 'weight', 'id_criteria');
-        foreach ($alternatives as $alternative) {
-            $hasCompleteEvaluations = true;
-            foreach ($criterias as $criteria) {
-                if (!isset($R[$alternative->id_alternative][$criteria->id_criteria])) {
-                    $hasCompleteEvaluations = false;
-                    break;
-                }
-            }
-            if ($hasCompleteEvaluations) {
-                $P[$alternative->id_alternative] = 0;
-                foreach ($criterias as $criteria) {
-                    $P[$alternative->id_alternative] += $W[$criteria->id_criteria] * $R[$alternative->id_alternative][$criteria->id_criteria];
-                }
-            }
-        }
+        $totalCriterias = (new \yii\db\Query())
+            ->from('saw_criterias')
+            ->count();
+
+        $totalSubCriterias = (new \yii\db\Query())
+            ->from('saw_sub_criterias') // Ganti dengan nama tabel sub-kriteria yang sesuai
+            ->count();
+
+        $role = Yii::$app->user->identity->role;
+
+        $chartData = (new \yii\db\Query())
+            ->select(['a.name as alternative_name', 'SUM(e.value) as score'])
+            ->from('saw_alternatives a')
+            ->leftJoin('saw_evaluations e', 'a.id_alternative = e.id_alternative') // Menggunakan kolom yang benar
+            ->groupBy('a.name')
+            ->all();
 
         return $this->render('index', [
-            'totalAlternatives' => count($alternatives),
-            'totalCriterias' => count($criterias),
-            'totalPreferences' => count($P),
-            'alternatives' => $alternatives,
-            'criterias' => $criterias,
-            'preferences' => $P,
-            'role' => $role, // Pass role to view
+            'totalAlternatives' => $totalAlternatives,
+            'totalCriterias' => $totalCriterias,
+            'totalSubCriterias' => $totalSubCriterias,
+            'role' => $role,
+            'chartData' => $chartData,
         ]);
     }
 

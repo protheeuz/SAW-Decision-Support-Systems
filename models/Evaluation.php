@@ -5,13 +5,26 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "saw_evaluations".
+ *
+ * @property int $id_alternative
+ * @property int $id_criteria
+ * @property float $value
+ */
 class Evaluation extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return 'saw_evaluations';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -21,13 +34,15 @@ class Evaluation extends ActiveRecord
         ];
     }
 
-    public function getAlternative()
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
     {
-        return $this->hasOne(Alternative::class, ['id_alternative' => 'id_alternative']);
-    }
-
-    public function getCriteria()
-    {
-        return $this->hasOne(Criteria::class, ['id_criteria' => 'id_criteria']);
+        return [
+            'id_alternative' => 'Id Alternative',
+            'id_criteria' => 'Id Criteria',
+            'value' => 'Value',
+        ];
     }
 }

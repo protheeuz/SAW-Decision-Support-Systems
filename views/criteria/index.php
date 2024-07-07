@@ -37,6 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <th>Kriteria</th>
                                     <th>Bobot</th>
                                     <th>Atribut</th>
+                                    <th>Target</th>
                                     <th>Aksi</th>
                                 </tr>
                                 <?php foreach ($criterias as $index => $criteria): ?>
@@ -46,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td><?= Html::encode($criteria->criteria) ?></td>
                                     <td><?= Html::encode($criteria->weight) ?></td>
                                     <td><?= Html::encode($criteria->attribute) ?></td>
+                                    <td><?= Html::encode($criteria->target) ?></td>
                                     <td>
                                         <?= Html::a('Edit', ['update', 'id' => $criteria->id_criteria], ['class' => 'btn btn-info btn-sm']) ?>
                                         <?= Html::a('Delete', ['delete', 'id' => $criteria->id_criteria], [

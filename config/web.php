@@ -68,6 +68,7 @@ $config = [
                 'sub-criteria/create' => 'sub-criteria/create',
                 'sub-criteria/update/<id:\d+>' => 'sub-criteria/update',
                 'sub-criteria/delete/<id:\d+>' => 'sub-criteria/delete',
+                'evaluation/delete/<id_alternative:\d+>/<id_criteria:\d+>' => 'evaluation/delete',
             ],
         ],
         'as access' => [

@@ -1,29 +1,12 @@
 <?php
-
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $alternatives app\models\Alternative[] */
-/* @var $criterias app\models\Criteria[] */
-/* @var $evaluations array */
-/* @var $maxValues array */
-/* @var $minValues array */
-
-$this->title = 'Metrik';
+$this->title = 'Matrix';
 $this->params['breadcrumbs'][] = $this->title;
-
-if (Yii::$app->session->hasFlash('warning')) {
-    echo '<div class="alert alert-warning">' . Yii::$app->session->getFlash('warning') . '</div>';
-}
-if (Yii::$app->session->hasFlash('success')) {
-    echo '<div class="alert alert-success">' . Yii::$app->session->getFlash('success') . '</div>';
-}
-if (Yii::$app->session->hasFlash('error')) {
-    echo '<div class="alert alert-danger">' . Yii::$app->session->getFlash('error') . '</div>';
-}
 ?>
+
 <div class="page-heading">
     <h3><?= Html::encode($this->title) ?></h3>
 </div>
@@ -66,31 +49,25 @@ if (Yii::$app->session->hasFlash('error')) {
                                     $X[$evaluation['id_criteria']][$evaluation['id_alternative']] = $evaluation['value'];
                                 }
                                 foreach ($alternatives as $alternative):
-                                    $hasEvaluation = false;
-                                    foreach ($criterias as $criteria) {
-                                        if (isset($X[$criteria->id_criteria][$alternative->id_alternative])) {
-                                            $hasEvaluation = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!$hasEvaluation) continue;
-                                ?>
+                                    ?>
                                     <tr>
                                         <th>A<?= Html::encode($alternative->id_alternative) ?> <?= Html::encode($alternative->name) ?></th>
                                         <?php foreach ($criterias as $criteria): ?>
                                             <td><?= Html::encode($X[$criteria->id_criteria][$alternative->id_alternative] ?? '-') ?></td>
                                         <?php endforeach; ?>
                                         <td>
-                                            <?= Html::a('Hapus', ['delete', 'id_alternative' => $alternative->id_alternative, 'id_criteria' => $criteria->id_criteria], [
+                                            <?php $csrfParam = Yii::$app->request->csrfParam; ?>
+                                            <?php $csrfToken = Yii::$app->request->csrfToken; ?>
+                                            <!-- <?= Html::a('Hapus', ['evaluation/delete', 'id_alternative' => $alternative->id_alternative, 'id_criteria' => $criteria->id_criteria], [
                                                 'class' => 'btn btn-danger btn-sm',
                                                 'data' => [
                                                     'confirm' => 'Apakah Anda yakin ingin menghapus item ini?',
                                                     'method' => 'post',
                                                     'params' => [
-                                                        Yii::$app->request->csrfParam => Yii::$app->request->csrfToken,
+                                                        $csrfParam => $csrfToken,
                                                     ],
                                                 ],
-                                            ]) ?>
+                                            ]) ?> -->
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -110,15 +87,7 @@ if (Yii::$app->session->hasFlash('error')) {
                             <?php if (!empty($evaluations)): ?>
                                 <?php
                                 foreach ($alternatives as $alternative):
-                                    $hasEvaluation = false;
-                                    foreach ($criterias as $criteria) {
-                                        if (isset($X[$criteria->id_criteria][$alternative->id_alternative])) {
-                                            $hasEvaluation = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!$hasEvaluation) continue;
-                                ?>
+                                    ?>
                                     <tr>
                                         <th>A<?= Html::encode($alternative->id_alternative) ?> <?= Html::encode($alternative->name) ?></th>
                                         <?php
@@ -156,7 +125,7 @@ if (Yii::$app->session->hasFlash('error')) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $form = ActiveForm::begin(['action' => Url::to(['matrix/index'])]); ?>
+            <?php $form = ActiveForm::begin(['action' => Url::to(['matrix/save'])]); ?>
             <div class="modal-body">
                 <?= $form->field(new \app\models\Evaluation(), 'id_alternative')->dropDownList(
                     \yii\helpers\ArrayHelper::map($alternatives, 'id_alternative', 'name'),

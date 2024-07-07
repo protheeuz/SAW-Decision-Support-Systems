@@ -39,19 +39,17 @@ class MatrixController extends Controller
 
     public function actionSave()
     {
-        $model = new Evaluation();
         $post = Yii::$app->request->post('Evaluation');
+        $existingEvaluation = Evaluation::findOne(['id_alternative' => $post['id_alternative'], 'id_criteria' => $post['id_criteria']]);
 
-        if ($post) {
-            $existingEvaluation = Evaluation::findOne(['id_alternative' => $post['id_alternative'], 'id_criteria' => $post['id_criteria']]);
-            if ($existingEvaluation) {
-                Yii::$app->session->setFlash('warning', 'Nilai untuk alternatif dan kriteria ini sudah ada.');
+        if ($existingEvaluation) {
+            Yii::$app->session->setFlash('warning', 'Nilai untuk alternatif dan kriteria ini sudah ada.');
+        } else {
+            $model = new Evaluation();
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Yii::$app->session->setFlash('success', 'Nilai berhasil disimpan.');
             } else {
-                if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                    Yii::$app->session->setFlash('success', 'Nilai berhasil disimpan.');
-                } else {
-                    Yii::$app->session->setFlash('error', 'Gagal menyimpan nilai.');
-                }
+                Yii::$app->session->setFlash('error', 'Gagal menyimpan nilai.');
             }
         }
 
@@ -60,8 +58,20 @@ class MatrixController extends Controller
 
     public function actionDelete($id_alternative, $id_criteria)
     {
-        Evaluation::deleteAll(['id_alternative' => $id_alternative, 'id_criteria' => $id_criteria]);
-        Yii::$app->session->setFlash('success', 'Nilai berhasil dihapus.');
+        Yii::error('Delete action called with id_alternative: ' . $id_alternative . ' and id_criteria: ' . $id_criteria);
+
+        try {
+            $deletedCount = Evaluation::deleteAll(['id_alternative' => $id_alternative, 'id_criteria' => $id_criteria]);
+            if ($deletedCount > 0) {
+                Yii::$app->session->setFlash('success', 'Data berhasil dihapus.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Gagal menghapus data. Data tidak ditemukan atau sudah dihapus sebelumnya.');
+            }
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('error', 'Gagal menghapus data. Error: ' . $e->getMessage());
+            Yii::error('Delete action failed. Error: ' . $e->getMessage());
+        }
+
         return $this->redirect(['index']);
     }
 }

@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use Yii;
 
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -41,15 +42,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function findByUsername($username)
     {
-        $user = static::findOne(['username' => $username]);
-        if ($user === null) {
-            throw new \Exception('User not found');
-        }
-        error_log('User found: ' . print_r($user->attributes, true));
-        if ($user->password === null) {
-            throw new \Exception('Password hash is null for user: ' . $username);
-        }
-        return $user;
+        return static::findOne(['username' => $username]);
     }
 
     public function getId()
@@ -69,16 +62,12 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function validatePassword($password)
     {
-        if ($this->password === null) {
-            throw new \Exception('Password hash is null');
-        }
-        
-        return \Yii::$app->security->validatePassword($password, $this->password);
+        return Yii::$app->security->validatePassword($password, $this->password);
     }
 
     public function setPassword($password)
     {
-        $this->password = \Yii::$app->security->generatePasswordHash($password);
+        $this->password = Yii::$app->security->generatePasswordHash($password);
     }
 
     public function beforeSave($insert)
