@@ -8,6 +8,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 // Path to your logo image in web/assets folder
 $logoPath = Yii::getAlias('@web/images/jakpro.png');
+$backgroundImagePath = Yii::getAlias('@web/images/lrt.png'); 
 
 // CSS classes for consistent font
 $authTitleClass = 'auth-title';
@@ -34,14 +35,19 @@ $authTextClass = 'text-white';
         }
         .auth-right {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             flex-direction: column;
             text-align: center;
             height: 100vh;
+            background-image: url('<?= $backgroundImagePath ?>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            padding-top: 50px;
         }
         .auth-right .bg-primary {
-            background-color: #007bff !important;
+            background-color: rgba(0, 123, 255, 0.7) !important; /* Adding a semi-transparent overlay */
         }
         #auth-left {
             display: flex;
@@ -68,6 +74,10 @@ $authTextClass = 'text-white';
         .btn-lg {
             padding: 20px 30px; /* Adjust padding */
             font-size: 1.4rem; /* Adjust the font size */
+        }
+        .text-bold {
+            font-weight: bold; /* Add this class to make text bold */
+            font-size: 1.5rem; /* Adjust the font size */
         }
     </style>
 </head>
@@ -118,7 +128,7 @@ $authTextClass = 'text-white';
             <div class="col-lg-6 d-none d-lg-block">
                 <div id="auth-right" class="bg-primary text-center py-5 auth-right">
                     <?= Html::img($logoPath, ['class' => 'img-fluid mb-4', 'style' => 'max-width: 250px;', 'alt' => 'Logo']) ?>
-                    <p class="<?= $authTextClass ?>">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>
+                    <p class="<?= $authTextClass ?> text-bold">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>
                 </div>
             </div>
         </div>

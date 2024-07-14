@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 ?>
 <div id="sidebar" class="active">
-    <div class="sidebar-wrapper active">
+    <div class="sidebar-wrapper active" style="background: linear-gradient(to bottom, #FFA726, #FFCC80);">
         <div class="sidebar-header">
             <div class="d-flex justify-content-between">
                 <div class="logo">
@@ -32,7 +32,7 @@ use yii\helpers\Url;
                         <i class="bi bi-file-earmark-spreadsheet-fill"></i>
                         <span>Data</span>
                     </a>
-                    <ul class="submenu ">
+                    <ul class="submenu">
                         <li class="submenu-item">
                             <a href="<?= Url::to(['/alternative/index']) ?>">Alternatif</a>
                         </li>
@@ -70,3 +70,9 @@ use yii\helpers\Url;
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
     </div>
 </div>
+
+<style>
+    .sidebar-wrapper {
+        background: linear-gradient(to bottom, #FFA726, #FFCC80);
+    }
+</style>
