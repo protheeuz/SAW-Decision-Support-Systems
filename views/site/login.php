@@ -12,7 +12,7 @@ $backgroundImagePath = Yii::getAlias('@web/images/lrt.png');
 
 // CSS classes for consistent font
 $authTitleClass = 'auth-title';
-$authTextClass = 'text-white';
+$authTextClass = 'text-dark';
 ?>
 
 <!DOCTYPE html>
@@ -43,16 +43,22 @@ $authTextClass = 'text-white';
             justify-content: center;
             align-items: center;
         }
-        .auth-right {
+        .auth-wrapper {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding-top: 50px;
-            background-color: rgba(0, 123, 255, 0.7) !important; /* Adding a semi-transparent overlay */
-            width: 100%;
+            gap: 30px; /* Adjust the gap between the cards */
             height: 100%;
+            width: 100%;
+        }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            margin-bottom: 20px;
         }
         #auth-left {
             display: flex;
@@ -84,23 +90,6 @@ $authTextClass = 'text-white';
         .text-bold {
             font-weight: bold; /* Add this class to make text bold */
             font-size: 1.5rem; /* Adjust the font size */
-        }
-        .card {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            margin-bottom: 20px;
-        }
-        .auth-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px; /* Adjust the gap between the cards */
-            height: 100%;
-            width: 100%;
         }
     </style>
 </head>
@@ -152,11 +141,13 @@ $authTextClass = 'text-white';
                     </div>
                 </div>
                 <div class="col-lg-5 d-none d-lg-block">
-                    <div id="auth-right" class="bg-primary text-center py-5 auth-right card">
+                    <div id="auth-right" class="text-center py-5 card">
                         <div class="card-header">
                             <?= Html::img($logoPath, ['class' => 'img-fluid mb-4', 'style' => 'max-width: 250px;', 'alt' => 'Logo']) ?>
                         </div>
-                        <p class="<?= $authTextClass ?> text-bold">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>
+                        <div class="card-body">
+                            <p class="<?= $authTextClass ?> text-bold">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>
+                        </div>
                     </div>
                 </div>
             </div>
