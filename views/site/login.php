@@ -47,7 +47,7 @@ $authTextClass = 'text-dark';
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 30px; /* Adjust the gap between the cards */
+            gap: 20px; /* Adjust the gap between the cards */
             height: 100%;
             width: 100%;
         }
