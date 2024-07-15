@@ -33,29 +33,35 @@ $authTextClass = 'text-white';
         body, h1, .auth-title, .text-white {
             font-family: 'Nunito', sans-serif !important;
         }
+        body {
+            background-image: url('<?= $backgroundImagePath ?>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         .auth-right {
             display: flex;
             justify-content: flex-start;
             align-items: center;
             flex-direction: column;
             text-align: center;
-            height: 100vh;
-            background-image: url('<?= $backgroundImagePath ?>');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
             padding-top: 50px;
-        }
-        .auth-right .bg-primary {
             background-color: rgba(0, 123, 255, 0.7) !important; /* Adding a semi-transparent overlay */
+            width: 100%;
+            height: 100%;
         }
         #auth-left {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            height: 100vh;
             text-align: center;
+            width: 100%;
+            height: 100%;
         }
         #auth-left .form-group {
             width: 100%;
@@ -79,56 +85,79 @@ $authTextClass = 'text-white';
             font-weight: bold; /* Add this class to make text bold */
             font-size: 1.5rem; /* Adjust the font size */
         }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            margin-bottom: 20px;
+        }
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px; /* Adjust the gap between the cards */
+            height: 100%;
+            width: 100%;
+        }
     </style>
 </head>
 
 <body>
     <div id="auth">
-        <div class="row h-100">
-            <div class="col-lg-6 col-12">
-                <div id="auth-left">
-                    <h1 class="<?= $authTitleClass ?>"><?= Html::encode($this->title) ?></h1>
-                    <?php $form = ActiveForm::begin([
-                        'id' => 'login-form',
-                        'layout' => 'horizontal',
-                        'fieldConfig' => [
-                            'template' => "{label}\n<div class=\"col-lg-12\">{input}{error}</div>",
-                            'labelOptions' => ['class' => 'col-lg-3 control-label'],
-                        ],
-                    ]); ?>
-
-                    <?= $form->field($model, 'username', [
-                        'inputTemplate' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="bi bi-person"></i></span></div>{input}</div>',
-                    ])->textInput(['autofocus' => true, 'placeholder' => 'Username', 'class' => 'form-control'])->label(false) ?>
-
-                    <?= $form->field($model, 'password', [
-                        'inputTemplate' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="bi bi-shield-lock"></i></span></div>{input}</div>',
-                    ])->passwordInput(['placeholder' => 'Password', 'class' => 'form-control'])->label(false) ?>
-
-                    <?= $form->field($model, 'rememberMe')->checkbox([
-                        'template' => "<div class=\"col-lg-12\">{input} Simpan info login {label}</div>\n<div class=\"col-lg-12\">{error}</div>",
-                    ])->label(false) ?>
-
-                    <div class="form-group">
-                        <div class="col-lg-12">
-                            <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block btn-lg shadow-lg mt-5', 'name' => 'login-button']) ?>
+        <div class="row h-100 w-100">
+            <div class="auth-wrapper">
+                <div class="col-lg-5 col-12">
+                    <div id="auth-left" class="card">
+                        <div class="card-header">
+                            <h1 class="<?= $authTitleClass ?>"><?= Html::encode($this->title) ?></h1>
                         </div>
+                        <?php $form = ActiveForm::begin([
+                            'id' => 'login-form',
+                            'layout' => 'horizontal',
+                            'fieldConfig' => [
+                                'template' => "{label}\n<div class=\"col-lg-12\">{input}{error}</div>",
+                                'labelOptions' => ['class' => 'col-lg-3 control-label'],
+                            ],
+                        ]); ?>
+
+                        <?= $form->field($model, 'username', [
+                            'inputTemplate' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="bi bi-person"></i></span></div>{input}</div>',
+                        ])->textInput(['autofocus' => true, 'placeholder' => 'Username', 'class' => 'form-control'])->label(false) ?>
+
+                        <?= $form->field($model, 'password', [
+                            'inputTemplate' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="bi bi-shield-lock"></i></span></div>{input}</div>',
+                        ])->passwordInput(['placeholder' => 'Password', 'class' => 'form-control'])->label(false) ?>
+
+                        <?= $form->field($model, 'rememberMe')->checkbox([
+                            'template' => "<div class=\"col-lg-12\">{input} Simpan info login {label}</div>\n<div class=\"col-lg-12\">{error}</div>",
+                        ])->label(false) ?>
+
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block btn-lg shadow-lg mt-5', 'name' => 'login-button']) ?>
+                            </div>
+                        </div>
+
+                        <?php ActiveForm::end(); ?>
+
+                        <?php if ($error !== null) : ?>
+                            <div class="alert alert-danger">
+                                Username atau password salah.
+                            </div>
+                        <?php endif; ?>
+
                     </div>
-
-                    <?php ActiveForm::end(); ?>
-
-                    <?php if ($error !== null) : ?>
-                        <div class="alert alert-danger">
-                            Username atau password salah.
-                        </div>
-                    <?php endif; ?>
-
                 </div>
-            </div>
-            <div class="col-lg-6 d-none d-lg-block">
-                <div id="auth-right" class="bg-primary text-center py-5 auth-right">
-                    <?= Html::img($logoPath, ['class' => 'img-fluid mb-4', 'style' => 'max-width: 250px;', 'alt' => 'Logo']) ?>
-                    <p class="<?= $authTextClass ?> text-bold">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div id="auth-right" class="bg-primary text-center py-5 auth-right card">
+                        <div class="card-header">
+                            <?= Html::img($logoPath, ['class' => 'img-fluid mb-4', 'style' => 'max-width: 250px;', 'alt' => 'Logo']) ?>
+                        </div>
+                        <p class="<?= $authTextClass ?> text-bold">Halo, Selamat datang di sistem penilaian karyawan menggunakan<br>metode Simple Additive Weighting (SAW) studi kasus PT. Jakarta Propertindo.</p>
+                    </div>
                 </div>
             </div>
         </div>
