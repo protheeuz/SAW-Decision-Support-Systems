@@ -40,12 +40,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             </caption>
                             <tr>
                                 <th>No</th>
-                                <th colspan="2">Nama</th>
+                                <th>Nama</th>
+                                <th>Profesi</th>
+                                <th>Umur</th>
+                                <th>Aksi</th>
                             </tr>
                             <?php foreach ($alternatives as $index => $alternative): ?>
                             <tr>
                                 <td class='right'><?= $index + 1 ?></td>
                                 <td class='center'><?= Html::encode($alternative->name) ?></td>
+                                <td class='center'><?= Html::encode($alternative->profession) ?></td>
+                                <td class='center'><?= Html::encode($alternative->age) ?></td>
                                 <td>
                                     <div class='btn-group mb-1'>
                                         <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -89,6 +94,8 @@ $form = ActiveForm::begin([
 
 echo '<div class="modal-body">';
 echo $form->field($model, 'name')->textInput(['placeholder' => 'Nama Kandidat...'])->label('Name:');
+echo $form->field($model, 'profession')->textInput(['placeholder' => 'Profesi Kandidat...'])->label('Profesi:');
+echo $form->field($model, 'age')->textInput(['type' => 'number', 'placeholder' => 'Umur Kandidat...'])->label('Umur:');
 echo '</div>';
 echo '<div class="modal-footer">';
 echo Html::button('Close', ['class' => 'btn btn-light-secondary', 'data-dismiss' => 'modal']);

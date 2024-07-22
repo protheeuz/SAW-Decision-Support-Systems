@@ -33,6 +33,8 @@ $this->params['breadcrumbs'][] = 'Edit';
                             <div class="form-group">
                                 <?= $form->field($model, 'id_alternative')->hiddenInput()->label(false) ?>
                                 <?= $form->field($model, 'name')->textInput(['value' => $model->name]) ?>
+                                <?= $form->field($model, 'profession')->textInput(['value' => $model->profession]) ?>
+                                <?= $form->field($model, 'age')->textInput(['type' => 'number', 'value' => $model->age]) ?>
                             </div>
                             <div class="form-group">
                                 <?= Html::submitButton('Edit Data', ['class' => 'btn btn-info btn-sm']) ?>

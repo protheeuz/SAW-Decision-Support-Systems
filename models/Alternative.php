@@ -14,8 +14,9 @@ class Alternative extends ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['name'], 'string', 'max' => 255],
+            [['name', 'profession', 'age'], 'required'],
+            [['name', 'profession'], 'string', 'max' => 255],
+            [['age'], 'integer'],
         ];
     }
 }
