@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controllers;
 
 use Yii;
@@ -12,15 +11,18 @@ class MatrixController extends Controller
 {
     public function actionIndex()
     {
+        $currentYear = Yii::$app->request->get('year', date('Y'));
+        $years = Evaluation::find()->select('year')->distinct()->orderBy('year')->column();
+
         $alternatives = Alternative::find()->all();
         $criterias = Criteria::find()->all();
-        $evaluations = Evaluation::find()->asArray()->all();
+        $allEvaluations = Evaluation::find()->asArray()->all();
 
         $maxValues = [];
         $minValues = [];
 
         foreach ($criterias as $criteria) {
-            $values = array_column(array_filter($evaluations, function ($evaluation) use ($criteria) {
+            $values = array_column(array_filter($allEvaluations, function ($evaluation) use ($criteria) {
                 return $evaluation['id_criteria'] == $criteria->id_criteria;
             }), 'value');
 
@@ -31,7 +33,7 @@ class MatrixController extends Controller
         return $this->render('index', [
             'alternatives' => $alternatives,
             'criterias' => $criterias,
-            'evaluations' => $evaluations,
+            'allEvaluations' => $allEvaluations,
             'maxValues' => $maxValues,
             'minValues' => $minValues,
         ]);
@@ -40,10 +42,10 @@ class MatrixController extends Controller
     public function actionSave()
     {
         $post = Yii::$app->request->post('Evaluation');
-        $existingEvaluation = Evaluation::findOne(['id_alternative' => $post['id_alternative'], 'id_criteria' => $post['id_criteria']]);
-
+        $existingEvaluation = Evaluation::findOne(['id_alternative' => $post['id_alternative'], 'id_criteria' => $post['id_criteria'], 'year' => $post['year']]);
+    
         if ($existingEvaluation) {
-            Yii::$app->session->setFlash('warning', 'Nilai untuk alternatif dan kriteria ini sudah ada.');
+            Yii::$app->session->setFlash('warning', 'Nilai untuk alternatif, kriteria, dan tahun ini sudah ada.');
         } else {
             $model = new Evaluation();
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -52,16 +54,14 @@ class MatrixController extends Controller
                 Yii::$app->session->setFlash('error', 'Gagal menyimpan nilai.');
             }
         }
-
+    
         return $this->redirect(['index']);
     }
 
-    public function actionDelete($id_alternative, $id_criteria)
+    public function actionDelete($id_alternative, $id_criteria, $year)
     {
-        Yii::error('Delete action called with id_alternative: ' . $id_alternative . ' and id_criteria: ' . $id_criteria);
-
         try {
-            $deletedCount = Evaluation::deleteAll(['id_alternative' => $id_alternative, 'id_criteria' => $id_criteria]);
+            $deletedCount = Evaluation::deleteAll(['id_alternative' => $id_alternative, 'id_criteria' => $id_criteria, 'year' => $year]);
             if ($deletedCount > 0) {
                 Yii::$app->session->setFlash('success', 'Data berhasil dihapus.');
             } else {

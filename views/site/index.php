@@ -101,6 +101,16 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Grafik Peningkatan Nilai Penilaian Alternatif</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="improvementChart"></canvas>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 
@@ -108,28 +118,38 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM fully loaded and parsed");
 
-    var ctx = document.getElementById('scoreChart').getContext('2d');
-    console.log(ctx); // Check if ctx is properly initialized
-
     var chartData = <?= json_encode($chartData) ?>;
-    var labels = chartData.map(function(data) {
-        return data.alternative_name;
+
+    // Group data by year and alternative
+    var groupedData = chartData.reduce(function(acc, current) {
+        if (!acc[current.year]) {
+            acc[current.year] = [];
+        }
+        acc[current.year].push(current);
+        return acc;
+    }, {});
+
+    // Grafik Bar untuk Tingkatan Skor Alternatif per Tahun
+    var ctx = document.getElementById('scoreChart').getContext('2d');
+    var barDatasets = Object.keys(groupedData).map(function(year) {
+        return {
+            label: 'Tahun ' + year,
+            data: groupedData[year].map(function(data) {
+                return data.score;
+            }),
+            backgroundColor: getRandomColor(),
+            borderColor: getRandomColor(),
+            borderWidth: 1
+        };
     });
-    var scores = chartData.map(function(data) {
-        return data.score;
-    });
+
+    var barLabels = [...new Set(chartData.map(data => data.alternative_name))];
 
     var scoreChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
-            datasets: [{
-                label: 'Skor',
-                data: scores,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
+            labels: barLabels,
+            datasets: barDatasets
         },
         options: {
             scales: {
@@ -150,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 tooltip: {
                     callbacks: {
                         label: function(tooltipItem) {
-                            return 'Skor: ' + tooltipItem.raw;
+                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
                         }
                     }
                 }
@@ -158,6 +178,64 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    console.log("Chart initialized");
+    // Grafik Line untuk Peningkatan Nilai Penilaian Alternatif
+    var improvementCtx = document.getElementById('improvementChart').getContext('2d');
+    var lineLabels = [...new Set(chartData.map(data => data.year))];
+    var lineDatasets = barLabels.map(label => {
+        return {
+            label: label,
+            data: lineLabels.map(year => {
+                var entry = chartData.find(data => data.alternative_name === label && data.year === year);
+                return entry ? entry.score : 0;
+            }),
+            fill: false,
+            borderColor: getRandomColor(),
+            tension: 0.1
+        };
+    });
+
+    var improvementChart = new Chart(improvementCtx, {
+        type: 'line',
+        data: {
+            labels: lineLabels,
+            datasets: lineDatasets
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 10
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: 'rgba(54, 162, 235, 1)'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    console.log("Charts initialized");
 });
 </script>

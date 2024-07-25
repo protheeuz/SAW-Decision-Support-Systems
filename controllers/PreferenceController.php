@@ -13,14 +13,17 @@ class PreferenceController extends Controller
 {
     public function actionIndex()
     {
+        // Dapatkan daftar tahun dari data evaluasi
+        $years = Evaluation::find()->select('year')->distinct()->column();
+
         $alternatives = Alternative::find()->all();
         $criterias = Criteria::find()->all();
 
-        // Get the evaluations
+        // Get the evaluations for all years
         $evaluations = Evaluation::find()->all();
         $X = [];
         foreach ($evaluations as $evaluation) {
-            $X[$evaluation->id_alternative][$evaluation->id_criteria] = $evaluation->value;
+            $X[$evaluation->year][$evaluation->id_alternative][$evaluation->id_criteria] = $evaluation->value;
         }
 
         // Calculate normalized values
@@ -29,21 +32,25 @@ class PreferenceController extends Controller
         $minValues = [];
 
         foreach ($criterias as $criteria) {
-            $values = array_column(array_filter($evaluations, function ($v) use ($criteria) {
-                return isset($v['id_criteria']) && $v['id_criteria'] == $criteria->id_criteria;
-            }), 'value');
+            foreach ($years as $year) {
+                $values = array_column(array_filter($evaluations, function ($v) use ($criteria, $year) {
+                    return isset($v['id_criteria'], $v['year']) && $v['id_criteria'] == $criteria->id_criteria && $v['year'] == $year;
+                }), 'value');
 
-            $maxValues[$criteria->id_criteria] = !empty($values) ? max($values) : 1;
-            $minValues[$criteria->id_criteria] = !empty($values) ? min($values) : 1;
+                $maxValues[$year][$criteria->id_criteria] = !empty($values) ? max($values) : 1;
+                $minValues[$year][$criteria->id_criteria] = !empty($values) ? min($values) : 1;
+            }
         }
 
         foreach ($alternatives as $alternative) {
-            foreach ($criterias as $criteria) {
-                $value = $X[$alternative->id_alternative][$criteria->id_criteria] ?? 0;
-                if ($criteria->attribute == 'benefit') {
-                    $R[$alternative->id_alternative][$criteria->id_criteria] = $value / ($maxValues[$criteria->id_criteria] ?: 1);
-                } else {
-                    $R[$alternative->id_alternative][$criteria->id_criteria] = ($minValues[$criteria->id_criteria] ?: 1) / ($value ?: 1);
+            foreach ($years as $year) {
+                foreach ($criterias as $criteria) {
+                    $value = $X[$year][$alternative->id_alternative][$criteria->id_criteria] ?? 0;
+                    if ($criteria->attribute == 'benefit') {
+                        $R[$year][$alternative->id_alternative][$criteria->id_criteria] = $value / ($maxValues[$year][$criteria->id_criteria] ?: 1);
+                    } else {
+                        $R[$year][$alternative->id_alternative][$criteria->id_criteria] = ($minValues[$year][$criteria->id_criteria] ?: 1) / ($value ?: 1);
+                    }
                 }
             }
         }
@@ -60,13 +67,15 @@ class PreferenceController extends Controller
         // Calculate preference values
         $P = [];
         foreach ($alternatives as $alternative) {
-            $P[$alternative->id_alternative] = 0;
-            foreach ($criterias as $criteria) {
-                if (isset($R[$alternative->id_alternative][$criteria->id_criteria])) {
-                    $subCriterias = SubCriteria::find()->where(['id_criteria' => $criteria->id_criteria])->all();
-                    foreach ($subCriterias as $subCriteria) {
-                        $weightedSubCriteria = $criteria->weight * $subCriteria->weight_pd;
-                        $P[$alternative->id_alternative] += $weightedSubCriteria * $R[$alternative->id_alternative][$criteria->id_criteria];
+            foreach ($years as $year) {
+                $P[$year][$alternative->id_alternative] = 0;
+                foreach ($criterias as $criteria) {
+                    if (isset($R[$year][$alternative->id_alternative][$criteria->id_criteria])) {
+                        $subCriterias = SubCriteria::find()->where(['id_criteria' => $criteria->id_criteria])->all();
+                        foreach ($subCriterias as $subCriteria) {
+                            $weightedSubCriteria = $criteria->weight * $subCriteria->weight_pd;
+                            $P[$year][$alternative->id_alternative] += $weightedSubCriteria * $R[$year][$alternative->id_alternative][$criteria->id_criteria];
+                        }
                     }
                 }
             }
@@ -75,7 +84,7 @@ class PreferenceController extends Controller
         return $this->render('index', [
             'alternatives' => $alternatives,
             'P' => $P,
-            'R' => $R,
+            'years' => $years,
         ]);
     }
 }

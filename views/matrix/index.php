@@ -31,83 +31,75 @@ $this->params['breadcrumbs'][] = $this->title;
                         Isi Nilai Alternatif
                     </button>
                     <div class="table-responsive">
-                        <table class="table table-striped mb-0 table-full-width">
-                            <caption>Matrik Keputusan(X)</caption>
-                            <tr>
-                                <th rowspan="2">Alternatif</th>
-                                <th colspan="<?= count($criterias) ?>">Kriteria</th>
-                            </tr>
-                            <tr>
-                                <?php foreach ($criterias as $index => $criteria): ?>
-                                    <th>C<?= $index + 1 ?></th>
-                                <?php endforeach; ?>
-                            </tr>
+                        <?php for ($year = 2019; $year <= date('Y'); $year++): ?>
+                            <?php
+                            $evaluations = array_filter($allEvaluations, function($evaluation) use ($year) {
+                                return $evaluation['year'] == $year;
+                            });
+                            ?>
                             <?php if (!empty($evaluations)): ?>
-                                <?php
-                                $X = [];
-                                foreach ($evaluations as $evaluation) {
-                                    $X[$evaluation['id_criteria']][$evaluation['id_alternative']] = $evaluation['value'];
-                                }
-                                foreach ($alternatives as $alternative):
-                                    ?>
+                                <h4>Penilaian Pada: <?= $year ?></h4>
+                                <table class="table table-striped mb-0 table-full-width">
+                                    <caption>Matrik Keputusan(X) Tahun <?= Html::encode($year) ?></caption>
                                     <tr>
-                                        <th>A<?= Html::encode($alternative->id_alternative) ?> <?= Html::encode($alternative->name) ?></th>
-                                        <?php foreach ($criterias as $criteria): ?>
-                                            <td><?= Html::encode($X[$criteria->id_criteria][$alternative->id_alternative] ?? '-') ?></td>
-                                        <?php endforeach; ?>
-                                        <td>
-                                            <?php $csrfParam = Yii::$app->request->csrfParam; ?>
-                                            <?php $csrfToken = Yii::$app->request->csrfToken; ?>
-                                            <!-- <?= Html::a('Hapus', ['evaluation/delete', 'id_alternative' => $alternative->id_alternative, 'id_criteria' => $criteria->id_criteria], [
-                                                'class' => 'btn btn-danger btn-sm',
-                                                'data' => [
-                                                    'confirm' => 'Apakah Anda yakin ingin menghapus item ini?',
-                                                    'method' => 'post',
-                                                    'params' => [
-                                                        $csrfParam => $csrfToken,
-                                                    ],
-                                                ],
-                                            ]) ?> -->
-                                        </td>
+                                        <th rowspan="2">Alternatif</th>
+                                        <th colspan="<?= count($criterias) ?>">Kriteria</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </table>
-                        <table class="table table-striped mb-0 table-full-width">
-                            <caption>Matrik Ternormalisasi (R)</caption>
-                            <tr>
-                                <th rowspan="2">Alternatif</th>
-                                <th colspan="<?= count($criterias) ?>">Kriteria</th>
-                            </tr>
-                            <tr>
-                                <?php foreach ($criterias as $index => $criteria): ?>
-                                    <th>C<?= $index + 1 ?></th>
-                                <?php endforeach; ?>
-                            </tr>
-                            <?php if (!empty($evaluations)): ?>
-                                <?php
-                                foreach ($alternatives as $alternative):
-                                    ?>
                                     <tr>
-                                        <th>A<?= Html::encode($alternative->id_alternative) ?> <?= Html::encode($alternative->name) ?></th>
-                                        <?php
-                                        $normalized = [];
-                                        foreach ($criterias as $criteria) {
-                                            $value = $X[$criteria->id_criteria][$alternative->id_alternative] ?? 0;
-                                            if ($criteria->attribute == 'benefit') {
-                                                $normalized[$criteria->id_criteria] = $value / ($maxValues[$criteria->id_criteria] ?: 1);
-                                            } else {
-                                                $normalized[$criteria->id_criteria] = ($minValues[$criteria->id_criteria] ?: 1) / ($value ?: 1);
-                                            }
-                                        }
+                                        <?php foreach ($criterias as $index => $criteria): ?>
+                                            <th>C<?= $index + 1 ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                    <?php
+                                    $X = [];
+                                    foreach ($evaluations as $evaluation) {
+                                        $X[$evaluation['id_criteria']][$evaluation['id_alternative']] = $evaluation['value'];
+                                    }
+                                    foreach ($alternatives as $alternative):
                                         ?>
-                                        <?php foreach ($criterias as $criteria): ?>
-                                            <td><?= Html::encode(round($normalized[$criteria->id_criteria], 2)) ?></td>
+                                        <tr>
+                                            <th>A<?= Html::encode($alternative->id_alternative) ?> <?= Html::encode($alternative->name) ?></th>
+                                            <?php foreach ($criterias as $criteria): ?>
+                                                <td><?= Html::encode($X[$criteria->id_criteria][$alternative->id_alternative] ?? '-') ?></td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                                <table class="table table-striped mb-0 table-full-width">
+                                    <caption>Matrik Ternormalisasi (R) Tahun <?= Html::encode($year) ?></caption>
+                                    <tr>
+                                        <th rowspan="2">Alternatif</th>
+                                        <th colspan="<?= count($criterias) ?>">Kriteria</th>
+                                    </tr>
+                                    <tr>
+                                        <?php foreach ($criterias as $index => $criteria): ?>
+                                            <th>C<?= $index + 1 ?></th>
                                         <?php endforeach; ?>
                                     </tr>
-                                <?php endforeach; ?>
+                                    <?php
+                                    foreach ($alternatives as $alternative):
+                                        ?>
+                                        <tr>
+                                            <th>A<?= Html::encode($alternative->id_alternative) ?> <?= Html::encode($alternative->name) ?></th>
+                                            <?php
+                                            $normalized = [];
+                                            foreach ($criterias as $criteria) {
+                                                $value = $X[$criteria->id_criteria][$alternative->id_alternative] ?? 0;
+                                                if ($criteria->attribute == 'benefit') {
+                                                    $normalized[$criteria->id_criteria] = $value / ($maxValues[$criteria->id_criteria] ?: 1);
+                                                } else {
+                                                    $normalized[$criteria->id_criteria] = ($minValues[$criteria->id_criteria] ?: 1) / ($value ?: 1);
+                                                }
+                                            }
+                                            ?>
+                                            <?php foreach ($criterias as $criteria): ?>
+                                                <td><?= Html::encode(round($normalized[$criteria->id_criteria], 2)) ?></td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
                             <?php endif; ?>
-                        </table>
+                        <?php endfor; ?>
                     </div>
                 </div>
             </div>
@@ -136,6 +128,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['prompt' => 'Pilih Kriteria']
                 ) ?>
                 <?= $form->field(new \app\models\Evaluation(), 'value')->textInput(['placeholder' => 'Nilai...']) ?>
+                <?= $form->field(new \app\models\Evaluation(), 'year')->dropDownList(
+                    array_combine(range(2019, date('Y')), range(2019, date('Y'))),
+                    ['prompt' => 'Pilih Tahun']
+                ) ?>
             </div>
             <div class="modal-footer">
                 <?= Html::submitButton('Simpan', ['class' => 'btn btn-primary']) ?>

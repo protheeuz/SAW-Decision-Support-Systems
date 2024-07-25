@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 use Yii;
@@ -11,6 +10,7 @@ use yii\db\ActiveRecord;
  * @property int $id_alternative
  * @property int $id_criteria
  * @property float $value
+ * @property int $year
  */
 class Evaluation extends ActiveRecord
 {
@@ -28,8 +28,8 @@ class Evaluation extends ActiveRecord
     public function rules()
     {
         return [
-            [['id_alternative', 'id_criteria', 'value'], 'required'],
-            [['id_alternative', 'id_criteria'], 'integer'],
+            [['id_alternative', 'id_criteria', 'value', 'year'], 'required'],
+            [['id_alternative', 'id_criteria', 'year'], 'integer'],
             [['value'], 'number'],
         ];
     }
@@ -43,6 +43,7 @@ class Evaluation extends ActiveRecord
             'id_alternative' => 'Id Alternative',
             'id_criteria' => 'Id Criteria',
             'value' => 'Value',
+            'year' => 'Year',
         ];
     }
 }

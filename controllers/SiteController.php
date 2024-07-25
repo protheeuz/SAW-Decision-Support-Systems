@@ -44,16 +44,18 @@ class SiteController extends Controller
             ->count();
 
         $totalSubCriterias = (new \yii\db\Query())
-            ->from('saw_sub_criterias') // Ganti dengan nama tabel sub-kriteria yang sesuai
+            ->from('saw_sub_criterias')
             ->count();
 
         $role = Yii::$app->user->identity->role;
 
+        // Mendapatkan data penilaian per tahun
         $chartData = (new \yii\db\Query())
-            ->select(['a.name as alternative_name', 'SUM(e.value) as score'])
+            ->select(['a.name as alternative_name', 'e.year', 'SUM(e.value) as score'])
             ->from('saw_alternatives a')
-            ->leftJoin('saw_evaluations e', 'a.id_alternative = e.id_alternative') // Menggunakan kolom yang benar
-            ->groupBy('a.name')
+            ->leftJoin('saw_evaluations e', 'a.id_alternative = e.id_alternative')
+            ->groupBy(['a.name', 'e.year'])
+            ->orderBy(['e.year' => SORT_ASC])
             ->all();
 
         return $this->render('index', [
