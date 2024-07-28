@@ -58,12 +58,21 @@ class SiteController extends Controller
             ->orderBy(['e.year' => SORT_ASC])
             ->all();
 
+        // Mendapatkan data penilaian per kriteria
+        $criteriaChartData = (new \yii\db\Query())
+            ->select(['c.criteria as criteria_name', 'SUM(e.value) as score'])
+            ->from('saw_evaluations e')
+            ->leftJoin('saw_criterias c', 'e.id_criteria = c.id_criteria')
+            ->groupBy('c.criteria')
+            ->all();
+
         return $this->render('index', [
             'totalAlternatives' => $totalAlternatives,
             'totalCriterias' => $totalCriterias,
             'totalSubCriterias' => $totalSubCriterias,
             'role' => $role,
             'chartData' => $chartData,
+            'criteriaChartData' => $criteriaChartData,
         ]);
     }
 
@@ -97,5 +106,22 @@ class SiteController extends Controller
         if ($exception !== null) {
             return $this->render('error', ['exception' => $exception]);
         }
+    }
+
+    // Mendapatkan data alternatif tertinggi berdasarkan kriteria
+    public function actionTopAlternative($criteria)
+    {
+        $topAlternative = (new \yii\db\Query())
+            ->select(['a.name as alternative_name', 'MAX(e.value) as score'])
+            ->from('saw_evaluations e')
+            ->leftJoin('saw_alternatives a', 'e.id_alternative = a.id_alternative')
+            ->leftJoin('saw_criterias c', 'e.id_criteria = c.id_criteria')
+            ->where(['c.criteria' => $criteria])
+            ->groupBy('a.name')
+            ->orderBy(['score' => SORT_DESC])
+            ->limit(1)
+            ->one();
+
+        return $this->asJson($topAlternative);
     }
 }

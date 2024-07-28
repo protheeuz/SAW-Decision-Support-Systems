@@ -9,6 +9,7 @@ use yii\web\JsExpression;
 /* @var $totalSubCriterias int */
 /* @var $role string */
 /* @var $chartData array */
+/* @var $criteriaChartData array */
 
 $this->title = 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
@@ -111,6 +112,26 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Grafik Per Kriteria</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="criteriaChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="alternativeChartCard" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Alternatif Tertinggi untuk Kriteria: <span id="selectedCriteria"></span></h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="alternativeChart"></canvas>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 
@@ -119,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM fully loaded and parsed");
 
     var chartData = <?= json_encode($chartData) ?>;
+    var criteriaChartData = <?= json_encode($criteriaChartData) ?>;
 
     // Group data by year and alternative
     var groupedData = chartData.reduce(function(acc, current) {
@@ -226,6 +248,110 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     });
+
+    // Grafik Bar untuk Kriteria
+    var criteriaCtx = document.getElementById('criteriaChart').getContext('2d');
+    var criteriaLabels = criteriaChartData.map(data => data.criteria_name);
+    var criteriaScores = criteriaChartData.map(data => data.score);
+
+    var criteriaChart = new Chart(criteriaCtx, {
+        type: 'bar',
+        data: {
+            labels: criteriaLabels,
+            datasets: [{
+                label: 'Skor Kriteria',
+                data: criteriaScores,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: getRandomColor(),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            onClick: function(evt) {
+                var activePoints = criteriaChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (activePoints.length > 0) {
+                    var index = activePoints[0].index;
+                    var selectedCriteria = criteriaLabels[index];
+                    displayAlternativeChart(selectedCriteria);
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 10
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Menampilkan nama alternatif tertinggi untuk kriteria yang dipilih
+    function displayAlternativeChart(criteriaName) {
+        var alternativeChartCard = document.getElementById('alternativeChartCard');
+        var selectedCriteriaSpan = document.getElementById('selectedCriteria');
+        var alternativeCtx = document.getElementById('alternativeChart').getContext('2d');
+
+        selectedCriteriaSpan.textContent = criteriaName;
+        alternativeChartCard.style.display = 'block';
+
+        fetch('<?= \yii\helpers\Url::to(['site/top-alternative']) ?>?criteria=' + criteriaName)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    var alternativeLabels = [data.alternative_name];
+                    var alternativeScores = [data.score];
+
+                    new Chart(alternativeCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: alternativeLabels,
+                            datasets: [{
+                                label: 'Skor Alternatif',
+                                data: alternativeScores,
+                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                borderColor: getRandomColor(),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 10
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+    }
 
     function getRandomColor() {
         var letters = '0123456789ABCDEF';
