@@ -111,17 +111,16 @@ class SiteController extends Controller
     // Mendapatkan data alternatif tertinggi berdasarkan kriteria
     public function actionTopAlternative($criteria)
     {
-        $topAlternative = (new \yii\db\Query())
-            ->select(['a.name as alternative_name', 'MAX(e.value) as score'])
+        $alternatives = (new \yii\db\Query())
+            ->select(['a.name as alternative_name', 'e.year', 'SUM(e.value) as score'])
             ->from('saw_evaluations e')
             ->leftJoin('saw_alternatives a', 'e.id_alternative = a.id_alternative')
             ->leftJoin('saw_criterias c', 'e.id_criteria = c.id_criteria')
             ->where(['c.criteria' => $criteria])
-            ->groupBy('a.name')
-            ->orderBy(['score' => SORT_DESC])
-            ->limit(1)
-            ->one();
+            ->groupBy(['a.name', 'e.year'])
+            ->orderBy(['a.name' => SORT_ASC, 'e.year' => SORT_ASC])
+            ->all();
 
-        return $this->asJson($topAlternative);
+        return $this->asJson($alternatives);
     }
 }
