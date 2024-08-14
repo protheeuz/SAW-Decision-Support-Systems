@@ -74,4 +74,29 @@ class MatrixController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionEdit($id_alternative, $year)
+    {
+        $evaluations = Evaluation::findAll(['id_alternative' => $id_alternative, 'year' => $year]);
+
+        if (empty($evaluations)) {
+            Yii::$app->session->setFlash('error', 'Data tidak ditemukan.');
+            return $this->redirect(['index']);
+        }
+
+        if (Yii::$app->request->post()) {
+            $postData = Yii::$app->request->post('Evaluation');
+            foreach ($evaluations as $evaluation) {
+                $evaluation->value = $postData[$evaluation->id_criteria] ?? $evaluation->value;
+                $evaluation->save(false);
+            }
+            Yii::$app->session->setFlash('success', 'Data berhasil diperbarui.');
+            return $this->redirect(['index']);
+        }
+
+        return $this->render('edit', [
+            'evaluations' => $evaluations,
+            'year' => $year,
+        ]);
+    }
 }

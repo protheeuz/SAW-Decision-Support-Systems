@@ -44,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <tr>
                                         <th rowspan="2">Alternatif</th>
                                         <th colspan="<?= count($criterias) ?>">Kriteria</th>
+                                        <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
                                         <?php foreach ($criterias as $index => $criteria): ?>
@@ -62,6 +63,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <?php foreach ($criterias as $criteria): ?>
                                                 <td><?= Html::encode($X[$criteria->id_criteria][$alternative->id_alternative] ?? '-') ?></td>
                                             <?php endforeach; ?>
+                                            <td>
+                                                <?= Html::a('Edit', ['matrix/edit', 'id_alternative' => $alternative->id_alternative, 'year' => $year], ['class' => 'btn btn-outline-primary btn-sm']) ?>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </table>

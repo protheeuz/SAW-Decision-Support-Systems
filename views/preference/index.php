@@ -115,7 +115,16 @@ function createDataProvider($alternatives, $P, $year) {
                                 </table>
                             </div>
                             <div class="pagination-wrapper">
-                                <?= LinkPager::widget(['pagination' => $dataProvider->pagination]) ?>
+                                <?= LinkPager::widget([
+                                    'pagination' => $dataProvider->pagination,
+                                    'options' => ['class' => 'pagination justify-content-center'],
+                                    'linkContainerOptions' => ['class' => 'page-item'],
+                                    'linkOptions' => ['class' => 'page-link'],
+                                    'activePageCssClass' => 'active',
+                                    'disabledPageCssClass' => 'disabled',
+                                    'prevPageLabel' => '&laquo;',
+                                    'nextPageLabel' => '&raquo;',
+                                ]) ?>
                             </div>
                         </div>
                     </div>

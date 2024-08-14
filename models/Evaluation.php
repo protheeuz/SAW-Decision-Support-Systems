@@ -46,4 +46,12 @@ class Evaluation extends ActiveRecord
             'year' => 'Year',
         ];
     }
+
+    /**
+     * Get related Criteria
+     */
+    public function getCriteria()
+    {
+        return $this->hasOne(Criteria::className(), ['id_criteria' => 'id_criteria']);
+    }
 }
