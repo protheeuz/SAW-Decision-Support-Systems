@@ -87,4 +87,17 @@ class PreferenceController extends Controller
             'years' => $years,
         ]);
     }
+
+    private function getPreferenceLabel($value)
+    {
+        if ($value >= 350) {
+            return 'Sangat Baik';
+        } elseif ($value >= 275) {
+            return 'Baik';
+        } elseif ($value >= 200) {
+            return 'Kurang Baik';
+        } else {
+            return 'Tidak Memadai';
+        }
+    }
 }

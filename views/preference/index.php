@@ -17,10 +17,12 @@ function createDataProvider($alternatives, $P, $year) {
     $preferenceData = [];
     foreach ($alternatives as $alternative) {
         if (isset($P[$year][$alternative->id_alternative]) && $P[$year][$alternative->id_alternative] != 0) {
+            $value = round($P[$year][$alternative->id_alternative], 2);
             $preferenceData[] = [
                 'id' => $alternative->id_alternative,
                 'name' => $alternative->name,
-                'value' => round($P[$year][$alternative->id_alternative], 2)
+                'value' => $value,
+                'label' => getPreferenceLabel($value) // Menambahkan label keterangan nilai
             ];
         }
     }
@@ -36,6 +38,20 @@ function createDataProvider($alternatives, $P, $year) {
             'pageSize' => 5,
         ],
     ]);
+}
+
+// Fungsi untuk mendapatkan label keterangan nilai
+function getPreferenceLabel($value)
+{
+    if ($value >= 350) {
+        return 'Sangat Baik';
+    } elseif ($value >= 275) {
+        return 'Baik';
+    } elseif ($value >= 200) {
+        return 'Kurang Baik';
+    } else {
+        return 'Tidak Memadai';
+    }
 }
 
 ?>
@@ -73,7 +89,7 @@ function createDataProvider($alternatives, $P, $year) {
                                     <tr>
                                         <td><?= $no++ ?></td>
                                         <td><?= Html::encode($alternative->name) ?></td>
-                                        <td><?= Html::encode(round($P[$year][$alternative->id_alternative], 2)) ?></td>
+                                        <td><?= Html::encode(round($P[$year][$alternative->id_alternative], 2)) ?> (<?= Html::encode(getPreferenceLabel(round($P[$year][$alternative->id_alternative], 2))) ?>)</td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </table>
@@ -107,7 +123,7 @@ function createDataProvider($alternatives, $P, $year) {
                                         <tr>
                                             <td><?= ($page * $pageSize) + $index + 1 ?></td>
                                             <td><?= Html::encode($item['name']) ?></td>
-                                            <td><?= Html::encode($item['value']) ?></td>
+                                            <td><?= Html::encode($item['value']) ?> - <?= Html::encode($item['label']) ?></td>
                                             <td><?= $rank++ ?></td>
                                         </tr>
                                         <?php endforeach; ?>

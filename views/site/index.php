@@ -96,6 +96,13 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
             <div class="card">
                 <div class="card-header">
                     <h4>Grafik Tingkatan Skor Alternatif</h4>
+                    <!-- Tambahkan Dropdown untuk Memilih Alternatif -->
+                    <select id="alternativeSelect" class="form-control">
+                        <option value="">Pilih Alternatif</option>
+                        <?php foreach ($chartData as $data): ?>
+                            <option value="<?= Html::encode($data['alternative_name']) ?>"><?= Html::encode($data['alternative_name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="card-body">
                     <canvas id="scoreChart"></canvas>
@@ -142,39 +149,45 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
         var chartData = <?= json_encode($chartData) ?>;
         var criteriaChartData = <?= json_encode($criteriaChartData) ?>;
 
-        // Group data by year and alternative
+        // Group data by alternative
         var groupedData = chartData.reduce(function(acc, current) {
-            if (!acc[current.year]) {
-                acc[current.year] = [];
+            if (!acc[current.alternative_name]) {
+                acc[current.alternative_name] = [];
             }
-            acc[current.year].push(current);
+            acc[current.alternative_name].push(current);
             return acc;
         }, {});
 
+        // Fungsi untuk membuat dataset grafik dari groupedData
+        function createDatasets(groupedData, allYears) {
+            var datasets = [];
+            for (var alternative in groupedData) {
+                datasets.push({
+                    label: alternative,
+                    data: allYears.map(function(year) {
+                        var entry = groupedData[alternative].find(function(item) {
+                            return item.year === year;
+                        });
+                        return entry ? entry.score : 0;
+                    }),
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    borderWidth: 1
+                });
+            }
+            return datasets;
+        }
+
+        // Mendapatkan semua tahun yang ada dalam data
+        var allYears = [...new Set(chartData.map(data => data.year))];
+
         // Grafik Bar untuk Tingkatan Skor Alternatif per Tahun
         var ctx = document.getElementById('scoreChart').getContext('2d');
-        var barDatasets = Object.keys(groupedData).map(function(year) {
-            return {
-                label: 'Tahun ' + year,
-                data: groupedData[year].map(function(data) {
-                    return data.score;
-                }),
-                backgroundColor: getRandomColor(),
-                borderColor: getRandomColor(),
-                borderWidth: 1
-            };
-        });
-
-        // Filter out null alternative_name and create barLabels
-        var barLabels = [...new Set(chartData
-            .filter(data => data.alternative_name !== null) // Exclude null alternative_name
-            .map(data => data.alternative_name))];
-
         var scoreChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: barLabels,
-                datasets: barDatasets
+                labels: allYears,
+                datasets: createDatasets(groupedData, allYears)
             },
             options: {
                 scales: {
@@ -203,10 +216,49 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
             }
         });
 
+        // Event listener for the dropdown
+        document.getElementById('alternativeSelect').addEventListener('change', function() {
+            var selectedAlternative = this.value;
+
+            if (selectedAlternative) {
+                var filteredData = groupedData[selectedAlternative] || [];
+
+                var datasets = [{
+                    label: selectedAlternative,
+                    data: allYears.map(function(year) {
+                        var entry = filteredData.find(function(item) {
+                            return item.year === year;
+                        });
+                        return entry ? entry.score : 0;
+                    }),
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    borderWidth: 1
+                }];
+
+                scoreChart.data.datasets = datasets;
+            } else {
+                // Tampilkan semua data jika tidak ada alternatif yang dipilih
+                scoreChart.data.datasets = createDatasets(groupedData, allYears);
+            }
+
+            scoreChart.update();
+        });
+
+        // Fungsi untuk menghasilkan warna acak
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
         // Grafik Line untuk Peningkatan Nilai Penilaian Alternatif
         var improvementCtx = document.getElementById('improvementChart').getContext('2d');
         var lineLabels = [...new Set(chartData.map(data => data.year))];
-        var lineDatasets = barLabels.map(label => {
+        var lineDatasets = [...new Set(chartData.map(data => data.alternative_name))].map(label => {
             return {
                 label: label,
                 data: lineLabels.map(year => {
@@ -385,16 +437,6 @@ $this->registerJsFile('@web/js/pages/ui-chartjs.js', ['depends' => [\yii\web\Jqu
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
-        }
-
-
-        function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
         }
 
         console.log("Charts initialized");
